@@ -27,7 +27,7 @@ class InteractivePlotPopup:
         self.fig = Figure(figsize=(6, 6))
         self.ax = self.fig.add_subplot(111)
         self.ax.set_ylim(0, 10)
-        self.ax.set_xlim(0, 10)
+        self.ax.set_xlim(-5, 5)
         self.ax.set_xlabel('lipidsx', fontweight='bold')
         self.ax.set_ylabel('lipidsz', fontweight='bold')
         self.ax.grid(True)
@@ -71,13 +71,17 @@ class InteractivePlotPopup:
         self.toggle_button.pack(padx=5, pady=5)
 
         # Button to save points
-        self.save_button = ttk.Button(control_frame, text="Save Points", command=self.save_points)
+        self.save_button = ttk.Button(control_frame, text="Write Output", command=self.save_points)
         self.save_button.pack(padx=5, pady=5)
-
+        
+        # Button for example case
+        self.example_button = ttk.Button(control_frame, text="Example Case", command=self.example_case)
+        self.example_button.pack(padx=5, pady=5)
+        
         # Button to close the window
         self.close_button = ttk.Button(control_frame, text="Close", command=self.on_close)
         self.close_button.pack(padx=5, pady=5)
-
+        
         # Output widget for displaying points
         self.out = tk.Text(self.popup, height=10, width=50)
         self.out.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=5)
@@ -91,6 +95,21 @@ class InteractivePlotPopup:
         # Draw the shaded regions and labels
         self.draw_shaded_regions()
 
+    def example_case(self):
+        self.resname_var.set('POPC')
+        self.points = [
+            (0, 8), (0, 7), (0, 6), (.5, 6), (0, 5), 
+            (0, 4), (0, 3), (0, 2), (1, 5), (1, 4), 
+            (1, 3), (1, 2)
+        ]
+        self.labels = [
+            'NC3', 'PO4', 'GL1', 'GL2', 'C1A', 
+            'D2A', 'C3A', 'C4A', 'C1B', 'C2B', 
+            'C3B', 'C4B'
+        ]
+        self.update_plot()
+        self.save_points()
+        
     def on_click(self, event):
         if event.inaxes != self.ax:
             return
@@ -124,7 +143,7 @@ class InteractivePlotPopup:
     def update_plot(self):
         self.ax.clear()
         self.ax.set_ylim(0, self.ymax_var.get())
-        self.ax.set_xlim(0, 10)
+        self.ax.set_xlim(-5, 5)
         self.ax.set_xlabel('lipidsx', fontweight='bold')
         self.ax.set_ylabel('lipidsz', fontweight='bold')
         self.ax.grid(True)
@@ -139,24 +158,28 @@ class InteractivePlotPopup:
 
     def draw_shaded_regions(self):
         ymax = self.ymax_var.get()
-        if ymax < 8:
+        if ymax < 8.5:
             return  # Avoid drawing regions if ymax is too small
 
         # Draw shaded regions and lines
-        self.ax.axhline(y=8, color='blue', alpha=0.3, linewidth=2)
-        self.ax.text(0, 8, "POPC Headgroup", color='blue', va='bottom', alpha=0.7)
+        # self.ax.axhline(y=8, color='blue', alpha=0.3, linewidth=2)
+        self.ax.axhspan(7.5, 8.5, color='blue', alpha=0.3)
+        self.ax.text(-4.5, 8, "Choline Headgroup", color='blue', va='bottom', alpha=0.7)
         
         if ymax >= 7:
-            self.ax.axhline(y=7, color='orange', alpha=0.3, linewidth=2)
-            self.ax.text(0, 7, "PO4", color='orange', va='bottom', alpha=0.7)
+            # self.ax.axhline(y=7, color='orange', alpha=0.3, linewidth=2)
+            self.ax.axhspan(6.5, 7.5, color='orange', alpha=0.3)
+            self.ax.text(-4.5, 7, "PO4", color='darkorange', va='bottom', alpha=0.7)
         
         if ymax >= 6:
-            self.ax.axhline(y=6, color='red', alpha=0.3, linewidth=2)
-            self.ax.text(0, 6, "Glycerol Region", color='red', va='bottom', alpha=0.7)
+            # self.ax.axhline(y=6, color='red', alpha=0.3, linewidth=2)
+            self.ax.axhspan(5.5, 6.5, color='red', alpha=0.3)
+
+            self.ax.text(-4.5, 6, "Glycerol Region", color='red', va='bottom', alpha=0.7)
         
         if ymax >= 5:
-            self.ax.axhspan(0, 5, color='grey', alpha=0.3)
-            self.ax.text(0, 2.5, "Acyl-chains", color='black', va='center', alpha=0.7)
+            self.ax.axhspan(0, 5.5, color='grey', alpha=0.3)
+            self.ax.text(-4.5, 2.5, "Acyl-chains", color='black', va='center', alpha=0.7)
             
     def update_ymax(self, event=None):
         self.update_plot()
