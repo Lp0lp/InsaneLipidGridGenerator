@@ -2,6 +2,7 @@
 
 Welcome to the Insane Lipid Grid Generator!
 by Luis Borges-Araujo. 2024 @ ENS-Lyon.
+
 This should help you define the initial lipid grid input used by insane & COBY to create lipid membranes.
 
 ### Quickstart guide:
